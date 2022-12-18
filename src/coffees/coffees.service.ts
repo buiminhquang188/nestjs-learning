@@ -1,37 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { CreateCoffeeDto } from './dto/create-coffee.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Coffee } from './entities/coffee.entity';
 
 @Injectable()
 export class CoffeesService {
-  private coffess: Coffee[] = [
-    {
-      id: 1,
-      name: 'Shipwreck Roast',
-      brand: 'Buddy Brew',
-      flavors: ['chocolate', 'vanilla'],
-    },
-  ];
+  constructor(
+    @InjectRepository(Coffee)
+    private readonly coffeeRepository: Repository<Coffee>,
+  ) {}
 
   findAll() {
-    return this.coffess;
+    return this.coffeeRepository.find();
   }
 
-  findOne(id: string) {
-    return this.coffess.find(item => item.id === Number(id));
-  }
-
-  create(createCoffeeDto: any) {
-    this.coffess.push(createCoffeeDto);
-    return createCoffeeDto;
-  }
-
-  update(id, body) {
-    const existingCoffee = this.findOne(id);
-    if (existingCoffee) {
+  async findOne(id: string) {
+    const coffee = await this.coffeeRepository.findOne({ where: { id: Number(id) } });
+    if (!coffee) {
+      throw new NotFoundException(`Coffee ${id} not found`);
     }
+    return coffee;
   }
 
-  remove(id: string) {
-    return this.coffess.filter(coffee => coffee.id !== Number(id));
+  create(createCoffeeDto: CreateCoffeeDto) {
+    const coffee = this.coffeeRepository.create(createCoffeeDto);
+    return this.coffeeRepository.save(coffee);
+  }
+
+  async update(id: string, updateCoffeeDto: UpdateCoffeeDto) {
+    const coffee = await this.coffeeRepository.preload({
+      id: Number(id),
+      ...updateCoffeeDto,
+    });
+    if (!coffee) {
+      throw new NotFoundException(`Coffee ${id} not found`);
+    }
+    return this.coffeeRepository.save(coffee);
+  }
+
+  async remove(id: string) {
+    const coffee = await this.findOne(id);
+    return this.coffeeRepository.remove(coffee);
   }
 }

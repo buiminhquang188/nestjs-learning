@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, Query, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
@@ -14,12 +14,8 @@ export class CoffeesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    const coffee = this.coffeesService.findOne('' + id);
-    if (!coffee) {
-      throw new HttpException(`Coffee ${id} not found`, HttpStatus.NOT_FOUND);
-    }
-    return coffee;
+  findOne(@Param('id') id: string) {
+    return this.coffeesService.findOne(id);
   }
 
   @Post()
