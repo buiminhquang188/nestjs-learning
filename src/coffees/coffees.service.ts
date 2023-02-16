@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Coffee } from './entities/coffee.entity';
 import { Event } from 'src/events/entities/event.entity';
-
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class CoffeesService {
   constructor(
@@ -16,7 +16,11 @@ export class CoffeesService {
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>,
     private readonly connection: DataSource,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const databaseHost = this.configService.get('database.host', 'localhost');
+    console.log(databaseHost);
+  }
 
   findAll(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;
