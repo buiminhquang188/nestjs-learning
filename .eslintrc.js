@@ -22,9 +22,11 @@ module.exports = {
     "@typescript-eslint/no-parameter-properties": 0,
     "@typescript-eslint/interface-name-prefix": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-var-requires": "off",
+    "no-empty-function": "off",
     "prettier/prettier": [
       "error",
       {
